@@ -23,4 +23,9 @@ target_compile_definitions(home PRIVATE
 
 target_include_directories(home PRIVATE ${CMAKE_CURRENT_LIST_DIR} )
 
-target_link_libraries(home pico_cyw43_arch_lwip_threadsafe_background pico_stdlib)
+target_link_libraries(
+        home
+        pico_cyw43_arch_lwip_threadsafe_background
+        pico_stdlib
+        hardware_adc
+)
