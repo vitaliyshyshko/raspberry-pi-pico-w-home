@@ -9,7 +9,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
-add_executable(home home.c)
+add_executable(home home.c
+        lib/display.c
+)
 
 pico_enable_stdio_usb(home 1)
 pico_enable_stdio_uart(home 1)
@@ -28,4 +30,5 @@ target_link_libraries(
         pico_cyw43_arch_lwip_threadsafe_background
         pico_stdlib
         hardware_adc
+        hardware_i2c
 )

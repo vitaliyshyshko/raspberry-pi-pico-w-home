@@ -2,7 +2,10 @@
 
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
+#include "pico/binary_info.h"
 #include "hardware/adc.h"
+#include "hardware/i2c.h"
+#include "lib/display.h"
 
 const char TEMPERATURE_UNIT = 'C';
 const char VOLTAGE_UNIT = 'V';
@@ -59,18 +62,30 @@ int main() {
 
     // Initialize all the present standard stdio types that are linked into the binary
     stdio_init_all();
-
     init_wifi();
     init_adc();
+    init_lcd();
+    // LCD
 
     while (true) {
         // Onboard Voltage/Temperature
         struct onboard_data onboard_data;
         read_onboard_data(&onboard_data);
-        printf("Onboard voltage = %.02f%c\n", onboard_data.voltage, VOLTAGE_UNIT);
-        printf("Onboard temperature = %.02f%c\n", onboard_data.temperature, TEMPERATURE_UNIT);
+
+        lcd_set_cursor(0, 0);
+        char onboardVoltageMessage[19];
+        sprintf(onboardVoltageMessage, "Board volt = %.02f%c", onboard_data.voltage, VOLTAGE_UNIT);
+        printf("%s\n", onboardVoltageMessage);
+        lcd_string(onboardVoltageMessage);
+
+        lcd_set_cursor(1, 0);
+        char onboardTemperatureMessage[19];
+        sprintf(onboardTemperatureMessage, "Board temp = %.02f%c", onboard_data.temperature, TEMPERATURE_UNIT);
+        printf("%s\n", onboardTemperatureMessage);
+        lcd_string(onboardTemperatureMessage);
 
         sleep_ms(SLEEP_MS);
+        lcd_clear();
     }
 
     // De-initialize the CYW43 architecture
