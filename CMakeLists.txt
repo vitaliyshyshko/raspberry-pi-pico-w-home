@@ -11,6 +11,7 @@ pico_sdk_init()
 
 add_executable(main main.c
         lib/display.c
+        lib/dht11.c
 )
 
 pico_enable_stdio_usb(main 1)

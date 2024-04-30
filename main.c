@@ -5,12 +5,15 @@
 #include "pico/binary_info.h"
 #include "hardware/adc.h"
 #include "hardware/i2c.h"
+
 #include "lib/display.h"
+#include "lib/dht11.h"
 
 const char TEMPERATURE_UNIT = 'C';
 const char VOLTAGE_UNIT = 'V';
+const char HUMIDITY_UNIT = '%';
 const float CONVERSION_FACTOR = 3.3f / (1 << 12);
-const uint SLEEP_MS = 5000;
+const uint SLEEP_MS = 1000 * 60; // 1min
 
 struct onboard_data {
     float voltage;
@@ -65,24 +68,40 @@ int main() {
     init_wifi();
     init_adc();
     init_lcd();
-    // LCD
+    gpio_init(15);
 
     while (true) {
         // Onboard Voltage/Temperature
         struct onboard_data onboard_data;
         read_onboard_data(&onboard_data);
 
+        // DHT11 Temperature/Humidity
+        dht_reading dht;
+        dht11_read_data(&dht);
+
         lcd_set_cursor(0, 0);
-        char onboardVoltageMessage[19];
-        sprintf(onboardVoltageMessage, "Board volt = %.02f%c", onboard_data.voltage, VOLTAGE_UNIT);
+        char onboardVoltageMessage[20];
+        sprintf(onboardVoltageMessage, "B.volt=%.02f%c", onboard_data.voltage, VOLTAGE_UNIT);
         printf("%s\n", onboardVoltageMessage);
         lcd_string(onboardVoltageMessage);
 
         lcd_set_cursor(1, 0);
-        char onboardTemperatureMessage[19];
-        sprintf(onboardTemperatureMessage, "Board temp = %.02f%c", onboard_data.temperature, TEMPERATURE_UNIT);
+        char onboardTemperatureMessage[20];
+        sprintf(onboardTemperatureMessage, "B.temp=%.02f%c", onboard_data.temperature, TEMPERATURE_UNIT);
         printf("%s\n", onboardTemperatureMessage);
         lcd_string(onboardTemperatureMessage);
+
+        lcd_set_cursor(2, 0);
+        char temperatureMessage[20];
+        sprintf(temperatureMessage, "Temperature=%.02f%c", dht.temp_celsius, TEMPERATURE_UNIT);
+        printf("%s\n", temperatureMessage);
+        lcd_string(temperatureMessage);
+
+        lcd_set_cursor(3, 0);
+        char humidityMessage[20];
+        sprintf(humidityMessage, "Humidity=%.02f%c", dht.humidity, HUMIDITY_UNIT);
+        printf("%s\n", humidityMessage);
+        lcd_string(humidityMessage);
 
         sleep_ms(SLEEP_MS);
         lcd_clear();
