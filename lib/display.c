@@ -80,7 +80,8 @@ void lcd_clear(void) {
 
 // go to location on LCD
 void lcd_set_cursor(int line, int position) {
-    int val = (line == 0) ? 0x80 + position : 0xC0 + position;
+    int line_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
+    int val = 0x80 + line_offsets[line] + position;
     lcd_send_byte(val, LCD_COMMAND);
 }
 
