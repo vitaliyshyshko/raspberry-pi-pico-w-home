@@ -1,6 +1,9 @@
-#include "display.h"
+#include <stdio.h>
+
 #include "hardware/i2c.h"
 #include "pico/binary_info.h"
+
+#include "display.h"
 
 // commands
 const int LCD_CLEARDISPLAY = 0x01;
@@ -96,6 +99,8 @@ void lcd_string(const char *s) {
 }
 
 void init_lcd() {
+    printf("Initialize LCD\n");
+
     // This example will use I2C0 on the default SDA and SCL pins (4, 5 on a Pico)
     i2c_init(i2c_default, 100 * 1000);
     gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
@@ -114,4 +119,6 @@ void init_lcd() {
     lcd_send_byte(LCD_FUNCTIONSET | LCD_2LINE, LCD_COMMAND);
     lcd_send_byte(LCD_DISPLAYCONTROL | LCD_DISPLAYON, LCD_COMMAND);
     lcd_clear();
+
+    printf("Initialised LCD\n");
 }
