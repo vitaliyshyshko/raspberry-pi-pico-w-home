@@ -60,6 +60,10 @@ void read_onboard_data(struct onboard_data *result) {
     result->temperature = temperature;
 }
 
+void led_blink(bool state) {
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, state);
+}
+
 int main() {
     printf("Initialize\n");
 
@@ -71,6 +75,8 @@ int main() {
     gpio_init(15);
 
     while (true) {
+        led_blink(true);
+
         // Onboard Voltage/Temperature
         struct onboard_data onboard_data;
         read_onboard_data(&onboard_data);
@@ -102,6 +108,8 @@ int main() {
         sprintf(humidityMessage, "Humidity=%.02f%c", dht.humidity, HUMIDITY_UNIT);
         printf("%s\n", humidityMessage);
         lcd_string(humidityMessage);
+
+        led_blink(false);
 
         sleep_ms(SLEEP_MS);
         lcd_clear();
